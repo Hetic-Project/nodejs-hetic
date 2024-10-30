@@ -1,6 +1,10 @@
 FROM node:20
 
-COPY backend/package.json .
-COPY . . 
+WORKDIR /backend
+
+COPY backend/package.json ./
 RUN npm install
-CMD ["npm", "start"]
+
+COPY backend/ . 
+
+CMD ["node", "server.js"]

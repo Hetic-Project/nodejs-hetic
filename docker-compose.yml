@@ -22,14 +22,13 @@ services:
     env_file:
       - ./.env
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=$MONGO_USER
-      - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
+      # - MONGO_INITDB_ROOT_USERNAME=$MONGO_USER
+      # - MONGO_INITDB_ROOT_PASSWORD=$MONGO_PASSWORD
       - MONGO_URI=$MONGO_URI
     ports:
       - "3001:3001"
     volumes:
       - ./backend:/backend
-    # command: 'sh -c "cd /backend && npm run start"'
 
 volumes:
   db:
