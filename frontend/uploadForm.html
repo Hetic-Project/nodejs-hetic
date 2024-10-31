@@ -3,11 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Upload Your File - Hetic</title>
 </head>
 <body>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-    </form>
+    <div class="container">
+        <h1>Upload your file!</h1>
+
+        <form id="uploadForm">
+            <input type="file" id="fileInput" name="file" required>
+            <button type="submit">Upload</button>
+        </form>
+        <p>(Maximum file size: 2GB per user)</p>
+
+        <p id="shareLinkSection" style="display: none;">Here's your share link: 
+            <a id="shareLink" href="#" target="_blank"></a>
+        </p>
+        <p id="errorMessage" style="color: red; display: none;"></p>
+    </div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('fileInput');
+            const errorMessage = document.getElementById('errorMessage');
+            const shareLinkSection = document.getElementById('shareLinkSection');
+            const shareLink = document.getElementById('shareLink');
+
+            if (fileInput.files.length === 0) {
+                errorMessage.style.display = "block";
+                errorMessage.textContent = "Chose a file and upload it.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            try {
+                const response = await fetch("http://localhost:3001/upload", {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result && result.path) {
+                    shareLinkSection.style.display = "block";
+                    shareLink.href = `http://localhost:3001/upload/${result.filename}`;
+                    shareLink.textContent = `http://localhost:3001/upload/${result.filename}`;
+                    errorMessage.style.display = "none";
+                } else {
+                    throw new Error("File upload failed. Something weird happened.");
+                }
+            } catch (error) {
+                console.error("error:", error);
+                errorMessage.style.display = "block";
+                errorMessage.textContent = "Response failed, check for any mistake?";
+            }
+        });
+    </script>
 </body>
 </html>
+
+<style>
+    html, body {
+        margin: 0;
+        background-color: #ABAB8E;
+        height: 100vh;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    input[type="file"] {
+        margin: 10px 0;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        width: 50%;
+        height: 50%;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #7A7A66;
+    }
+
+    button {
+        margin-top: 15px;
+        padding: 12px 24px;
+        background-color: #4A5A4E;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+        background-color: #6C7D68;
+    }
+
+    button:active {
+        background-color: #3D4C41;
+    }
+
+    #shareLinkSection {
+        margin-top: 20px;
+        font-size: 1rem;
+        color: #cfd1cf;
+    }
+
+    #shareLink {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    #shareLink:hover {
+        text-decoration: underline;
+    }
+</style>

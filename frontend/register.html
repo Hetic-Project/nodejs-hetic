@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Hetic</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Create an Account</h2>
+        <form id="registerForm">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+            <button type="submit">Register</button>
+        </form>
+        <p class="login-link">Already have an account? <a href="/frontend/login.html">Log in</a></p>
+        <p id="error-message" style="color: red; display: none;"></p>
+    </div>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorMessage = document.getElementById('error-message');
+
+            if (password !== confirmPassword) {
+                errorMessage.style.display = "block";
+                errorMessage.textContent = "The two passwords do not match. Make them the same.";
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:3001/register", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, password, confirmPassword })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = "/frontend/login.html";
+                } else {
+                    errorMessage.style.display = "block";
+                    errorMessage.textContent = result.msg;
+                }
+            } catch (error) {
+                console.error("Registration request failed", error);
+                errorMessage.style.display = "block";
+                errorMessage.textContent = "Something weird happened. Check again.";
+            }
+        });
+    </script>
+</body>
+</html>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #ABAB8E;
+    }
+
+    .container {
+        background-color: #fff;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 300px;
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 1.5rem;
+        color: #333;
+    }
+
+    label {
+        display: block;
+        margin: 0.5rem 0 0.25rem;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+        width: 100%;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    button {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #7A7A66;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #7A7A37;
+    }
+
+    .login-link {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: #555;
+    }
+
+    .login-link a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+
+    #error-message {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+</style>
