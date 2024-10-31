@@ -1,18 +1,26 @@
 const express = require("express")
 const router = express.Router()
+const fs = require('fs')
+const path = require('path')
 const authController = require("../controllers/authentification")
 const uploadFileController = require("../controllers/uploadFile")
 // const getFilesController = require("../controllers/getFiles")
-
 const multer = require('multer')
+
+const uploadDir = path.join(__dirname, 'backend/upload');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+
 const storage= multer.diskStorage({
     destination: function(req, file, cb) {
-        cb(null, 'backend/upload')
+        cb(null, uploadDir)
     },
     filename: function(req, file, cb) {
         cb(null, file.originalname)
     }
 })
+
 const upload = multer({ storage })
 
 
